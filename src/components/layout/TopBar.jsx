@@ -17,12 +17,12 @@ export default function TopBar() {
   const title = PAGE_TITLES[pathname] || 'RollIQ'
 
   return (
-    <header className="hidden md:flex items-center justify-between px-6 py-3 border-b border-surface-700 bg-surface-800/50 backdrop-blur-sm flex-shrink-0">
+    <header className="hidden md:flex items-center justify-between px-6 py-3 glass-panel flex-shrink-0 z-10 relative">
       <div>
         <h1 className="text-sm font-semibold text-[var(--text-primary)]">{title}</h1>
       </div>
-      <div className="flex items-center gap-2">
-        <div className="w-8 h-8 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center text-xs text-white font-semibold">
+      <div className="flex items-center gap-4">
+        <div className="w-8 h-8 rounded-full bg-gradient-to-br from-brand-500 to-purple-600 flex items-center justify-center text-xs text-white font-semibold shadow-lg shadow-brand-500/20 ring-2 ring-white/10 cursor-pointer hover:scale-105 transition-transform">
           {(user?.name || user?.email || 'D')[0].toUpperCase()}
         </div>
       </div>

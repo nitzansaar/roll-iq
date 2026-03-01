@@ -14,10 +14,8 @@ export default function RecommendationsPage() {
   const { summary } = useEntriesStore()
 
   useEffect(() => {
-    if (videos.length === 0) {
-      fetchRecommendations(summary?.weaknesses)
-    }
-  }, [])
+    fetchRecommendations(summary?.weaknesses)
+  }, [summary?.weaknesses])
 
   const weaknesses = summary?.weaknesses || []
 

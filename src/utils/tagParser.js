@@ -84,6 +84,36 @@ const KEYWORD_MAP = {
 }
 
 /**
+ * Find the single most-mentioned position in text.
+ * Counts actual keyword occurrences and weights by keyword specificity
+ * (multi-word keywords score higher per hit).
+ * @param {string} text
+ * @returns {string|null}
+ */
+export function extractPrimaryTag(text) {
+  if (!text) return null
+  const lower = text.toLowerCase()
+  const counts = {}
+
+  for (const [keyword, tag] of Object.entries(KEYWORD_MAP)) {
+    let occurrences = 0
+    let pos = 0
+    while ((pos = lower.indexOf(keyword, pos)) !== -1) {
+      occurrences++
+      pos += keyword.length
+    }
+    if (occurrences > 0) {
+      // Weight by word count so "de la riva" beats a single "guard" mention
+      counts[tag] = (counts[tag] || 0) + occurrences * keyword.split(' ').length
+    }
+  }
+
+  const entries = Object.entries(counts)
+  if (entries.length === 0) return null
+  return entries.sort((a, b) => b[1] - a[1])[0][0]
+}
+
+/**
  * Extract position tags from free-text notes
  * @param {string} text
  * @returns {string[]} - unique position tags

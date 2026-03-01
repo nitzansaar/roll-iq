@@ -37,6 +37,7 @@ export function SegmentedControl({ options, value, onChange, className = '' }) {
       {options.map(opt => (
         <button
           key={opt.value}
+          type="button"
           onClick={() => onChange(opt.value)}
           className={`
             relative px-3 py-1.5 text-xs font-medium rounded-md transition-all duration-150

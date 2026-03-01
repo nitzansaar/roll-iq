@@ -27,11 +27,12 @@ export function useRecommendations() {
   }, [summary?.weaknesses])
 
   const toggleSave = async (videoId) => {
+    // Read current state BEFORE updating so the action is correct
+    const video = videos.find(v => v.id === videoId)
+    const action = video?.saved ? 'unsave' : 'save'
     setVideos(prev =>
       prev.map(v => v.id === videoId ? { ...v, saved: !v.saved } : v)
     )
-    const video = videos.find(v => v.id === videoId)
-    const action = video?.saved ? 'unsave' : 'save'
     await saveVideoInteraction(user?.id, videoId, action)
     toast.success(action === 'save' ? 'Video saved to watchlist!' : 'Removed from watchlist')
   }

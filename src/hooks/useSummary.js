@@ -7,15 +7,19 @@ import { IS_MOCK as GROQ_MOCK } from '../lib/groq'
 import { subDays, parseISO } from 'date-fns'
 
 export function useSummary() {
-  const { entries, summary, summaryLoading, setSummary, setSummaryLoading } = useEntriesStore()
+  const { summary, summaryLoading, setSummary, setSummaryLoading } = useEntriesStore()
   const { toast } = useUIStore()
 
   const generateSummary = useCallback(async (period = 'last-30-days') => {
+    // Guard against concurrent calls and read fresh entries at call time
+    const { summaryLoading: isLoading, entries } = useEntriesStore.getState()
+    if (isLoading) return
+
     setSummaryLoading(true)
     try {
       const days = period === 'last-7-days' ? 7 : 30
       const cutoff = subDays(new Date(), days)
-      const periodEntries = entries.filter(e => parseISO(e.date) >= cutoff)
+      const periodEntries = entries.filter(e => e.date && parseISO(e.date) >= cutoff)
 
       if (periodEntries.length === 0) {
         toast.info('No entries found for this period. Log some sessions first!')
@@ -49,8 +53,6 @@ export function useSummary() {
           totalSessions: periodEntries.length,
           totalMinutes: periodEntries.reduce((s, e) => s + (e.duration || 0), 0),
           avgMood: periodEntries.reduce((s, e) => s + (e.mood || 0), 0) / periodEntries.length,
-          giSessions: periodEntries.filter(e => e.type === 'gi').length,
-          nogiSessions: periodEntries.filter(e => e.type === 'nogi').length,
         }
       }
 
@@ -62,7 +64,7 @@ export function useSummary() {
     } finally {
       setSummaryLoading(false)
     }
-  }, [entries])
+  }, [])
 
   return {
     summary,

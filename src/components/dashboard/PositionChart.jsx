@@ -1,5 +1,6 @@
+import { useMemo } from 'react'
 import {
-  BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Cell
+  BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer
 } from 'recharts'
 import Card, { CardHeader, CardTitle } from '../ui/Card'
 import { mockPositionStats } from '../../utils/mockData'
@@ -11,7 +12,7 @@ const CustomTooltip = ({ active, payload, label }) => {
   const rate = total ? Math.round((wins / total) * 100) : 0
 
   return (
-    <div className="bg-surface-600 border border-surface-500 rounded-lg px-3 py-2.5 shadow-xl">
+    <div className="glass-panel rounded-lg px-3 py-2.5 shadow-2xl backdrop-blur-md">
       <p className="text-xs font-medium text-[var(--text-primary)] mb-1">{label}</p>
       <p className="text-xs text-green-400">{wins} wins</p>
       <p className="text-xs text-red-400">{losses} losses</p>
@@ -21,10 +22,8 @@ const CustomTooltip = ({ active, payload, label }) => {
 }
 
 export default function PositionChart({ entries }) {
-  // Build stats from entries if provided, otherwise use mock
-  let data = mockPositionStats
-
-  if (entries?.length > 0) {
+  const data = useMemo(() => {
+    if (!entries?.length) return mockPositionStats
     const posMap = {}
     for (const e of entries) {
       for (const pos of (e.positions || [])) {
@@ -33,18 +32,16 @@ export default function PositionChart({ entries }) {
         posMap[pos].losses += e.losses || 0
       }
     }
-
     const built = Object.entries(posMap)
       .map(([p, s]) => ({
         position: p.split('-').map(w => w[0].toUpperCase() + w.slice(1)).join(' '),
         ...s,
-        total: s.wins + s.losses
+        total: s.wins + s.losses,
       }))
       .sort((a, b) => b.total - a.total)
       .slice(0, 6)
-
-    if (built.length > 0) data = built
-  }
+    return built.length > 0 ? built : mockPositionStats
+  }, [entries])
 
   return (
     <Card>
@@ -56,21 +53,21 @@ export default function PositionChart({ entries }) {
       <div className="h-52">
         <ResponsiveContainer width="100%" height="100%">
           <BarChart data={data} margin={{ top: 4, right: 0, left: -24, bottom: 0 }}>
-            <CartesianGrid strokeDasharray="3 3" stroke="#2c2c3a" vertical={false} />
+            <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.05)" vertical={false} />
             <XAxis
               dataKey="position"
-              tick={{ fontSize: 10, fill: '#6b6b80' }}
+              tick={{ fontSize: 10, fill: '#a1a1b5' }}
               axisLine={false}
               tickLine={false}
             />
             <YAxis
-              tick={{ fontSize: 10, fill: '#6b6b80' }}
+              tick={{ fontSize: 10, fill: '#a1a1b5' }}
               axisLine={false}
               tickLine={false}
             />
             <Tooltip content={<CustomTooltip />} cursor={{ fill: 'rgba(255,255,255,0.03)' }} />
-            <Bar dataKey="wins" fill="#16a34a" radius={[3, 3, 0, 0]} maxBarSize={20} />
-            <Bar dataKey="losses" fill="#dc2626" radius={[3, 3, 0, 0]} maxBarSize={20} opacity={0.6} />
+            <Bar dataKey="wins" fill="#10b981" radius={[4, 4, 0, 0]} maxBarSize={24} />
+            <Bar dataKey="losses" fill="#ef4444" radius={[4, 4, 0, 0]} maxBarSize={24} opacity={0.6} />
           </BarChart>
         </ResponsiveContainer>
       </div>

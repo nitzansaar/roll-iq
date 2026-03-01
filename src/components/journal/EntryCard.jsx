@@ -1,14 +1,15 @@
-import { motion } from 'framer-motion'
-import { Clock, Swords, ChevronRight, Trash2, Edit } from 'lucide-react'
-import { useNavigate } from 'react-router-dom'
+import { useState } from 'react'
+import { motion, AnimatePresence } from 'framer-motion'
+import { Clock, Swords, ChevronDown, ChevronUp, Trash2 } from 'lucide-react'
 import { formatDate, formatDuration } from '../../utils/dateHelpers'
-import { formatTag } from '../../utils/tagParser'
 import Badge, { MoodBadge } from '../ui/Badge'
-import useUIStore from '../../store/uiStore'
 
 export default function EntryCard({ entry, onDelete, compact = false }) {
-  const navigate = useNavigate()
-  const { openModal } = useUIStore()
+  const [expanded, setExpanded] = useState(false)
+
+  const hasDetails = entry.highlights || entry.improvements || entry.instructorFeedback
+  const notesLong = (entry.notes?.length ?? 0) > 120
+  const expandable = !compact && (hasDetails || notesLong)
 
   const winRate = entry.wins + entry.losses > 0
     ? Math.round((entry.wins / (entry.wins + entry.losses)) * 100)
@@ -20,20 +21,13 @@ export default function EntryCard({ entry, onDelete, compact = false }) {
       initial={{ opacity: 0, y: 8 }}
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0, y: -8 }}
-      className="bg-surface-700 border border-surface-500/40 rounded-xl hover:border-surface-400/60 transition-all duration-200 group"
+      className={`card-premium group ${compact ? 'p-3' : ''}`}
     >
-      <div className="p-4">
+      <div className={compact ? '' : 'p-4'}>
         {/* Header */}
         <div className="flex items-start justify-between gap-3 mb-3">
           <div className="flex-1 min-w-0">
             <div className="flex items-center gap-2 mb-1">
-              <span className={`text-xs font-medium px-2 py-0.5 rounded border ${
-                entry.type === 'gi'
-                  ? 'bg-blue-900/30 text-blue-300 border-blue-700/40'
-                  : 'bg-orange-900/30 text-orange-300 border-orange-700/40'
-              }`}>
-                {entry.type === 'gi' ? 'Gi' : 'No-Gi'}
-              </span>
               <span className="text-xs text-[var(--text-muted)]">
                 {formatDate(entry.date)}
               </span>
@@ -47,7 +41,7 @@ export default function EntryCard({ entry, onDelete, compact = false }) {
 
         {/* Notes preview */}
         {entry.notes && !compact && (
-          <p className="text-xs text-[var(--text-secondary)] line-clamp-2 mb-3 leading-relaxed">
+          <p className={`text-xs text-[var(--text-secondary)] mb-3 leading-relaxed ${expanded ? '' : 'line-clamp-2'}`}>
             {entry.notes}
           </p>
         )}
@@ -69,25 +63,53 @@ export default function EntryCard({ entry, onDelete, compact = false }) {
           )}
         </div>
 
-        {/* Tags */}
+        {/* Primary focus area */}
         {entry.positions?.length > 0 && (
-          <div className="flex flex-wrap gap-1.5">
-            {entry.positions.slice(0, compact ? 2 : 4).map(pos => (
-              <Badge key={pos} position={pos} />
-            ))}
-            {entry.positions.length > (compact ? 2 : 4) && (
-              <span className="text-xs text-[var(--text-muted)]">
-                +{entry.positions.length - (compact ? 2 : 4)} more
-              </span>
-            )}
+          <div className="flex items-center gap-1.5">
+            <span className="text-[10px] font-medium text-[var(--text-muted)] uppercase tracking-wider">Focus</span>
+            <Badge position={entry.positions[0]} />
           </div>
         )}
       </div>
 
+      {/* Expanded detail section */}
+      <AnimatePresence>
+        {expanded && !compact && (
+          <motion.div
+            initial={{ height: 0, opacity: 0 }}
+            animate={{ height: 'auto', opacity: 1 }}
+            exit={{ height: 0, opacity: 0 }}
+            transition={{ duration: 0.2 }}
+            className="overflow-hidden"
+          >
+            <div className="px-4 pb-4 space-y-3 border-t border-surface-600 pt-3">
+              {entry.highlights && (
+                <div>
+                  <p className="text-[10px] font-semibold uppercase tracking-wider text-green-500 mb-1">Highlights</p>
+                  <p className="text-xs text-[var(--text-secondary)]">{entry.highlights}</p>
+                </div>
+              )}
+              {entry.improvements && (
+                <div>
+                  <p className="text-[10px] font-semibold uppercase tracking-wider text-orange-400 mb-1">Needs work</p>
+                  <p className="text-xs text-[var(--text-secondary)]">{entry.improvements}</p>
+                </div>
+              )}
+              {entry.instructorFeedback && (
+                <div>
+                  <p className="text-[10px] font-semibold uppercase tracking-wider text-blue-400 mb-1">Coach feedback</p>
+                  <p className="text-xs text-[var(--text-secondary)]">{entry.instructorFeedback}</p>
+                </div>
+              )}
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
       {/* Actions footer */}
-      {!compact && (
-        <div className="flex items-center justify-between px-4 py-2.5 border-t border-surface-600 opacity-0 group-hover:opacity-100 transition-opacity">
-          <div className="flex items-center gap-1">
+      {!compact && (expandable || onDelete) && (
+        <div className="flex items-center justify-between px-4 py-2.5 border-t border-surface-600">
+          <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
             {onDelete && (
               <button
                 onClick={(e) => { e.stopPropagation(); onDelete(entry.id) }}
@@ -97,12 +119,15 @@ export default function EntryCard({ entry, onDelete, compact = false }) {
               </button>
             )}
           </div>
-          <button
-            onClick={() => navigate(`/journal/${entry.id}`)}
-            className="flex items-center gap-1 text-xs text-blue-400 hover:text-blue-300 transition-colors font-medium"
-          >
-            View details <ChevronRight size={12} />
-          </button>
+          {expandable && (
+            <button
+              onClick={() => setExpanded(v => !v)}
+              className="flex items-center gap-1 text-xs text-blue-400 hover:text-blue-300 transition-colors font-medium"
+            >
+              {expanded ? 'Show less' : 'Read more'}
+              {expanded ? <ChevronUp size={12} /> : <ChevronDown size={12} />}
+            </button>
+          )}
         </div>
       )}
     </motion.div>

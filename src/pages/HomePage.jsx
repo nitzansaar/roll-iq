@@ -1,4 +1,4 @@
-import { useEffect } from 'react'
+import { useEffect, useMemo } from 'react'
 import { Link } from 'react-router-dom'
 import { Plus, ArrowRight, BookOpen } from 'lucide-react'
 import { motion } from 'framer-motion'
@@ -28,8 +28,8 @@ export default function HomePage() {
   const { entries, loading } = useEntries()
   const { summary } = useSummary()
 
-  const recentEntries = entries.slice(0, 3)
-  const stats = getPeriodStats(entries, 30)
+  const recentEntries = useMemo(() => entries.slice(0, 3), [entries])
+  const stats = useMemo(() => getPeriodStats(entries, 30), [entries])
 
   const firstName = user?.name?.split(' ')[0] || 'Practitioner'
   const hour = new Date().getHours()
@@ -84,10 +84,11 @@ export default function HomePage() {
           <motion.div variants={itemVariants}>
             <Link
               to="/new"
-              className="block bg-gradient-to-br from-blue-600/20 to-purple-600/20 border border-blue-500/30 rounded-xl p-5 hover:from-blue-600/30 hover:to-purple-600/30 transition-all duration-200 group"
+              className="block glass-panel rounded-2xl p-5 hover:bg-white/5 transition-all duration-300 group hover:-translate-y-1 hover:shadow-xl hover:shadow-brand-500/10 cursor-pointer relative overflow-hidden"
             >
-              <div className="flex items-center gap-3 mb-2">
-                <div className="w-9 h-9 rounded-xl bg-blue-600/30 flex items-center justify-center group-hover:bg-blue-600/40 transition-colors">
+              <div className="absolute inset-0 bg-gradient-to-br from-brand-600/10 to-purple-600/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+              <div className="relative z-10 flex items-center gap-4 mb-3">
+                <div className="w-10 h-10 rounded-xl bg-brand-500/20 flex flex-shrink-0 items-center justify-center group-hover:bg-brand-500/30 transition-colors shadow-inner ring-1 ring-white/10">
                   <Plus size={18} className="text-blue-400" />
                 </div>
                 <div>
@@ -127,11 +128,12 @@ export default function HomePage() {
           {/* Empty state */}
           {entries.length === 0 && !loading && (
             <motion.div variants={itemVariants}>
-              <div className="text-center py-8 bg-surface-700 border border-surface-500/40 rounded-xl">
-                <BookOpen size={28} className="text-[var(--text-muted)] mx-auto mb-3" />
-                <p className="text-sm font-medium text-[var(--text-secondary)]">No sessions yet</p>
+              <div className="text-center py-10 glass-panel rounded-2xl relative overflow-hidden">
+                <div className="absolute inset-0 bg-gradient-to-br from-white/5 to-transparent pointer-events-none" />
+                <BookOpen size={32} className="text-brand-400 opacity-50 mx-auto mb-4" />
+                <p className="text-sm font-semibold text-white">No sessions yet</p>
                 <p className="text-xs text-[var(--text-muted)] mt-1 mb-4">Log your first training session</p>
-                <Button size="sm" icon={Plus} onClick={() => {}}>
+                <Button size="sm" icon={Plus} onClick={() => { }}>
                   <Link to="/new">Log Session</Link>
                 </Button>
               </div>

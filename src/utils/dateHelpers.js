@@ -193,8 +193,6 @@ export function getPeriodStats(entries, days = 30) {
     winRate: totalWins + totalLosses > 0
       ? Math.round((totalWins / (totalWins + totalLosses)) * 100)
       : 0,
-    giSessions: filtered.filter(e => e.type === 'gi').length,
-    nogiSessions: filtered.filter(e => e.type === 'nogi').length,
   }
 }
 

@@ -12,10 +12,7 @@ export const mockUser = {
   gym: 'Gracie Academy',
   instructor: 'Marcus Almeida',
   joinedAt: '2023-09-15',
-  preferences: {
-    defaultType: 'gi',
-    showGiNoGi: true,
-  }
+  preferences: {}
 }
 
 export const POSITIONS = [
@@ -41,7 +38,7 @@ export const mockEntries = [
     id: 'entry-001',
     userId: 'demo-user-001',
     date: format(subDays(today, 0), 'yyyy-MM-dd'),
-    type: 'gi',
+
     duration: 90,
     mood: 4,
     energy: 3,
@@ -61,7 +58,7 @@ export const mockEntries = [
     id: 'entry-002',
     userId: 'demo-user-001',
     date: format(subDays(today, 2), 'yyyy-MM-dd'),
-    type: 'nogi',
+
     duration: 75,
     mood: 5,
     energy: 5,
@@ -81,7 +78,7 @@ export const mockEntries = [
     id: 'entry-003',
     userId: 'demo-user-001',
     date: format(subDays(today, 4), 'yyyy-MM-dd'),
-    type: 'gi',
+
     duration: 60,
     mood: 2,
     energy: 2,
@@ -101,7 +98,7 @@ export const mockEntries = [
     id: 'entry-004',
     userId: 'demo-user-001',
     date: format(subDays(today, 6), 'yyyy-MM-dd'),
-    type: 'gi',
+
     duration: 105,
     mood: 4,
     energy: 4,
@@ -121,7 +118,7 @@ export const mockEntries = [
     id: 'entry-005',
     userId: 'demo-user-001',
     date: format(subDays(today, 8), 'yyyy-MM-dd'),
-    type: 'gi',
+
     duration: 90,
     mood: 3,
     energy: 3,
@@ -141,7 +138,7 @@ export const mockEntries = [
     id: 'entry-006',
     userId: 'demo-user-001',
     date: format(subDays(today, 10), 'yyyy-MM-dd'),
-    type: 'nogi',
+
     duration: 60,
     mood: 4,
     energy: 5,
@@ -161,7 +158,7 @@ export const mockEntries = [
     id: 'entry-007',
     userId: 'demo-user-001',
     date: format(subDays(today, 13), 'yyyy-MM-dd'),
-    type: 'gi',
+
     duration: 120,
     mood: 5,
     energy: 4,
@@ -181,7 +178,7 @@ export const mockEntries = [
     id: 'entry-008',
     userId: 'demo-user-001',
     date: format(subDays(today, 15), 'yyyy-MM-dd'),
-    type: 'gi',
+
     duration: 75,
     mood: 3,
     energy: 4,
@@ -201,7 +198,7 @@ export const mockEntries = [
     id: 'entry-009',
     userId: 'demo-user-001',
     date: format(subDays(today, 18), 'yyyy-MM-dd'),
-    type: 'gi',
+
     duration: 90,
     mood: 4,
     energy: 3,
@@ -221,7 +218,7 @@ export const mockEntries = [
     id: 'entry-010',
     userId: 'demo-user-001',
     date: format(subDays(today, 21), 'yyyy-MM-dd'),
-    type: 'nogi',
+
     duration: 75,
     mood: 5,
     energy: 5,
@@ -254,7 +251,7 @@ export function generateHistoricalEntries() {
       id: `entry-hist-${i}`,
       userId: 'demo-user-001',
       date: format(subDays(today, i), 'yyyy-MM-dd'),
-      type: types[Math.floor(Math.random() * types.length)],
+
       duration: [60, 75, 90, 105][Math.floor(Math.random() * 4)],
       mood: moods[Math.floor(Math.random() * moods.length)],
       energy: moods[Math.floor(Math.random() * moods.length)],
@@ -297,7 +294,6 @@ export const mockSummary = {
 - **Guard when stacked**: Triangle attacks getting defended by stacking. Angling out earlier is the key fix.
 
 **Patterns:**
-- No-gi sessions consistently show higher mood/energy than gi (4.6 vs 3.8 avg)
 - Morning sessions have lower performance scores — consider timing if possible
 - Saturday sessions are your best performers — competition prep environment suits you
 
@@ -319,8 +315,6 @@ export const mockSummary = {
     avgMood: 4.1,
     avgEnergy: 3.9,
     winRate: 0.67,
-    giSessions: 16,
-    nogiSessions: 8,
     currentStreak: 4,
     longestStreak: 8,
   }

@@ -9,27 +9,29 @@ export default {
     extend: {
       colors: {
         brand: {
-          50:  '#eff6ff',
-          100: '#dbeafe',
-          200: '#bfdbfe',
-          300: '#93c5fd',
-          400: '#60a5fa',
-          500: '#3b82f6',
-          600: '#2563eb',
-          700: '#1d4ed8',
-          800: '#1e40af',
-          900: '#1e3a8a',
+          50: '#f0f4ff',
+          100: '#e0e7ff',
+          200: '#c7d2fe',
+          300: '#a5b4fc',
+          400: '#818cf8',
+          500: '#6366f1',
+          600: '#4f46e5',
+          700: '#4338ca',
+          800: '#3730a3',
+          900: '#312e81',
+          950: '#1e1b4b',
         },
         surface: {
-          900: '#0a0a0f',
-          800: '#111118',
-          700: '#1a1a24',
-          600: '#22222e',
-          500: '#2c2c3a',
-          400: '#3a3a4a',
-          300: '#4a4a5c',
-          200: '#6b6b80',
-          100: '#9898aa',
+          950: '#000000', // OLED Black
+          900: '#09090b', // Ultra dark bg
+          800: '#121217', // Secondary bg
+          700: '#1c1c24', // Cards/Elevated
+          600: '#272732', // Borders/Hover
+          500: '#3f3f5a', // Muted accents
+          400: '#71718a',
+          300: '#a1a1b5',
+          200: '#d4d4dc',
+          100: '#f4f4f5',
         }
       },
       fontFamily: {
@@ -37,8 +39,9 @@ export default {
       },
       animation: {
         'pulse-slow': 'pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite',
-        'fade-in': 'fadeIn 0.3s ease-out',
-        'slide-up': 'slideUp 0.3s ease-out',
+        'fade-in': 'fadeIn 0.4s ease-out',
+        'slide-up': 'slideUp 0.5s cubic-bezier(0.16, 1, 0.3, 1)',
+        'float': 'float 6s ease-in-out infinite',
       },
       keyframes: {
         fadeIn: {
@@ -46,9 +49,13 @@ export default {
           '100%': { opacity: '1' },
         },
         slideUp: {
-          '0%': { opacity: '0', transform: 'translateY(12px)' },
+          '0%': { opacity: '0', transform: 'translateY(20px)' },
           '100%': { opacity: '1', transform: 'translateY(0)' },
         },
+        float: {
+          '0%, 100%': { transform: 'translateY(0)' },
+          '50%': { transform: 'translateY(-10px)' },
+        }
       },
     },
   },

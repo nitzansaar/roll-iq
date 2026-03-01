@@ -82,7 +82,11 @@ export async function getRecommendations(weaknesses = []) {
 
   const videos = []
 
-  for (const weakness of weaknesses.slice(0, 3)) {
+  const targets = weaknesses.length > 0
+    ? weaknesses
+    : ['guard', 'back-control', 'half-guard'].map(p => ({ position: p }))
+
+  for (const weakness of targets.slice(0, 3)) {
     const position = weakness.position || weakness
     const query = POSITION_QUERY_MAP[position] || `${position.replace(/-/g, ' ')} BJJ`
 
@@ -92,6 +96,13 @@ export async function getRecommendations(weaknesses = []) {
     } catch (err) {
       console.warn(`YouTube search failed for ${position}:`, err)
     }
+  }
+
+  // Fall back to mock videos if all API calls failed
+  if (videos.length === 0) {
+    const positionSet = new Set(targets.map(w => w.position || w))
+    const filtered = mockVideos.filter(v => positionSet.has(v.position))
+    return filtered.length > 0 ? filtered : mockVideos
   }
 
   return videos

@@ -1,10 +1,12 @@
 import { motion } from 'framer-motion'
+import { useLocation } from 'react-router-dom'
 import Sidebar from './Sidebar'
 import TopBar from './TopBar'
 import MobileNav from './MobileNav'
 import ToastContainer from '../ui/Toast'
 
 export default function AppLayout({ children }) {
+  const location = useLocation()
   return (
     <div className="flex h-screen bg-[var(--bg-primary)] overflow-hidden">
       {/* Sidebar — desktop only */}

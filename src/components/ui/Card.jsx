@@ -9,7 +9,7 @@ export default function Card({
   animate = false,
 }) {
   const base = `
-    bg-surface-700 border border-surface-500/50 rounded-xl
+    card-premium
     ${padding ? 'p-5' : ''}
     ${hover ? 'card-hover cursor-pointer' : ''}
     ${className}

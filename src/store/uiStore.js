@@ -16,9 +16,11 @@ const useUIStore = create(
       modalData: null,
 
       // Preferences
-      darkMode: true, // always dark for now
+      darkMode: true,
+      instructor: '',
 
       // Actions
+      setInstructor: (name) => set({ instructor: name }),
       setSidebarOpen: (open) => set({ sidebarOpen: open }),
       toggleSidebar: () => set((s) => ({ sidebarCollapsed: !s.sidebarCollapsed })),
 
@@ -53,6 +55,7 @@ const useUIStore = create(
       partialize: (state) => ({
         sidebarCollapsed: state.sidebarCollapsed,
         darkMode: state.darkMode,
+        instructor: state.instructor,
       }),
     }
   )

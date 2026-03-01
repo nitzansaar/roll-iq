@@ -27,10 +27,10 @@ export default function SummaryCard() {
             <p className="text-xs text-[var(--text-muted)]">Analyzing your recent training</p>
           </div>
         </div>
-        <div className="space-y-2">
-          <div className="skeleton h-3 w-full rounded" />
-          <div className="skeleton h-3 w-4/5 rounded" />
-          <div className="skeleton h-3 w-3/5 rounded" />
+        <div className="space-y-3">
+          <div className="skeleton h-3 w-full rounded-full" />
+          <div className="skeleton h-3 w-4/5 rounded-full" />
+          <div className="skeleton h-3 w-3/5 rounded-full" />
         </div>
       </Card>
     )
@@ -83,22 +83,22 @@ export default function SummaryCard() {
 
       {/* Stats row */}
       {summary.stats && (
-        <div className="grid grid-cols-3 gap-2 mb-4">
-          <div className="bg-surface-600/50 rounded-lg p-2.5 text-center">
-            <p className="text-lg font-bold text-[var(--text-primary)]">{summary.stats.totalSessions}</p>
-            <p className="text-[10px] text-[var(--text-muted)]">Sessions</p>
+        <div className="grid grid-cols-3 gap-3 mb-5">
+          <div className="bg-surface-900/40 border border-white/5 shadow-inner rounded-xl p-3 text-center transition-all hover:bg-surface-900/60">
+            <p className="text-xl font-bold text-white tracking-tight">{summary.stats.totalSessions}</p>
+            <p className="text-[10px] text-[var(--text-muted)] font-medium uppercase tracking-wider mt-0.5">Sessions</p>
           </div>
-          <div className="bg-surface-600/50 rounded-lg p-2.5 text-center">
-            <p className="text-lg font-bold text-[var(--text-primary)]">
+          <div className="bg-surface-900/40 border border-white/5 shadow-inner rounded-xl p-3 text-center transition-all hover:bg-surface-900/60">
+            <p className="text-xl font-bold text-white tracking-tight">
               {Math.round(summary.stats.totalMinutes / 60)}h
             </p>
-            <p className="text-[10px] text-[var(--text-muted)]">Mat time</p>
+            <p className="text-[10px] text-[var(--text-muted)] font-medium uppercase tracking-wider mt-0.5">Mat time</p>
           </div>
-          <div className="bg-surface-600/50 rounded-lg p-2.5 text-center">
-            <p className="text-lg font-bold text-[var(--text-primary)]">
+          <div className="bg-surface-900/40 border border-white/5 shadow-inner rounded-xl p-3 text-center transition-all hover:bg-surface-900/60">
+            <p className="text-xl font-bold text-white tracking-tight">
               {summary.stats.avgMood?.toFixed(1)}
             </p>
-            <p className="text-[10px] text-[var(--text-muted)]">Avg mood</p>
+            <p className="text-[10px] text-[var(--text-muted)] font-medium uppercase tracking-wider mt-0.5">Avg mood</p>
           </div>
         </div>
       )}

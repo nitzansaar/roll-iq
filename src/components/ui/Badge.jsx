@@ -8,8 +8,6 @@ const variants = {
   orange: 'bg-orange-900/40 text-orange-300 border-orange-700/50',
   purple: 'bg-purple-900/40 text-purple-300 border-purple-700/50',
   yellow: 'bg-yellow-900/40 text-yellow-300 border-yellow-700/50',
-  gi: 'bg-blue-900/40 text-blue-300 border-blue-700/50',
-  nogi: 'bg-orange-900/40 text-orange-300 border-orange-700/50',
 }
 
 export default function Badge({

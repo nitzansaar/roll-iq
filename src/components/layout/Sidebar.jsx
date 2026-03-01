@@ -30,11 +30,11 @@ export default function Sidebar() {
     <motion.aside
       animate={{ width: sidebarCollapsed ? 64 : 224 }}
       transition={{ type: 'spring', stiffness: 300, damping: 30 }}
-      className="relative flex flex-col h-full bg-surface-800 border-r border-surface-600 overflow-hidden flex-shrink-0"
+      className="relative flex flex-col h-full bg-surface-900/40 backdrop-blur-2xl border-r border-white/5 overflow-hidden flex-shrink-0 z-20"
     >
       {/* Logo */}
-      <div className="flex items-center gap-3 px-4 py-5 border-b border-surface-700">
-        <div className="w-8 h-8 rounded-lg bg-blue-600 flex items-center justify-center flex-shrink-0 shadow-lg shadow-blue-600/30">
+      <div className="flex items-center gap-3 px-4 py-5 border-b border-white/5">
+        <div className="w-8 h-8 rounded-xl bg-gradient-to-br from-brand-500 to-brand-700 flex items-center justify-center flex-shrink-0 shadow-lg shadow-brand-500/30 border border-white/10 ring-1 ring-white/5">
           <span className="text-white font-bold text-xs">IQ</span>
         </div>
         <AnimatePresence>
@@ -60,32 +60,46 @@ export default function Sidebar() {
             to={to}
             end={exact}
             className={({ isActive }) =>
-              `${isActive ? 'nav-item-active' : 'nav-item'} ${
-                highlight ? 'bg-blue-600/10 text-blue-400 hover:bg-blue-600/20 hover:text-blue-300' : ''
+              `${isActive ? 'nav-item-active' : 'nav-item'} ${highlight ? 'text-brand-400' : ''
               }`
             }
             title={sidebarCollapsed ? label : undefined}
           >
-            <Icon size={16} className="flex-shrink-0" />
-            <AnimatePresence>
-              {!sidebarCollapsed && (
-                <motion.span
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  exit={{ opacity: 0 }}
-                  transition={{ duration: 0.1 }}
-                  className="whitespace-nowrap text-sm"
-                >
-                  {label}
-                </motion.span>
-              )}
-            </AnimatePresence>
+            {({ isActive }) => (
+              <>
+                {isActive && (
+                  <motion.div
+                    layoutId="sidebar-active"
+                    className="absolute inset-0 bg-white/10 rounded-xl"
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    exit={{ opacity: 0 }}
+                  />
+                )}
+                <div className="relative z-10 flex items-center gap-3 w-full">
+                  <Icon size={18} className={`flex-shrink-0 ${isActive && highlight ? 'text-brand-400' : ''}`} />
+                  <AnimatePresence>
+                    {!sidebarCollapsed && (
+                      <motion.span
+                        initial={{ opacity: 0, x: -4 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        exit={{ opacity: 0, x: -4 }}
+                        transition={{ duration: 0.15 }}
+                        className="whitespace-nowrap text-sm font-medium"
+                      >
+                        {label}
+                      </motion.span>
+                    )}
+                  </AnimatePresence>
+                </div>
+              </>
+            )}
           </NavLink>
         ))}
       </nav>
 
       {/* Bottom section */}
-      <div className="px-2 py-3 border-t border-surface-700 space-y-0.5">
+      <div className="p-3 border-t border-white/5 space-y-1">
         {/* Mock mode indicator */}
         {IS_MOCK && (
           <div
@@ -110,26 +124,41 @@ export default function Sidebar() {
 
         <NavLink
           to="/settings"
-          className={({ isActive }) => isActive ? 'nav-item-active' : 'nav-item'}
+          className={({ isActive }) => `${isActive ? 'nav-item-active' : 'nav-item'}`}
           title={sidebarCollapsed ? 'Settings' : undefined}
         >
-          <Settings size={16} className="flex-shrink-0" />
-          <AnimatePresence>
-            {!sidebarCollapsed && (
-              <motion.span initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="text-sm">
-                Settings
-              </motion.span>
-            )}
-          </AnimatePresence>
+          {({ isActive }) => (
+            <>
+              {isActive && (
+                <motion.div
+                  layoutId="sidebar-active"
+                  className="absolute inset-0 bg-white/10 rounded-xl"
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  exit={{ opacity: 0 }}
+                />
+              )}
+              <div className="relative z-10 flex items-center gap-3 w-full">
+                <Settings size={18} className="flex-shrink-0" />
+                <AnimatePresence>
+                  {!sidebarCollapsed && (
+                    <motion.span initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="text-sm font-medium">
+                      Settings
+                    </motion.span>
+                  )}
+                </AnimatePresence>
+              </div>
+            </>
+          )}
         </NavLink>
 
         {/* User */}
         <div
-          className="flex items-center gap-2 px-3 py-2 rounded-lg cursor-pointer hover:bg-surface-600/60 transition-colors group"
+          className="flex items-center gap-3 p-2 rounded-xl cursor-pointer hover:bg-white/5 transition-colors group relative"
           onClick={handleLogout}
           title={sidebarCollapsed ? `Logout (${user?.name || user?.email})` : undefined}
         >
-          <div className="w-6 h-6 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center flex-shrink-0 text-xs text-white font-semibold">
+          <div className="w-8 h-8 rounded-full bg-gradient-to-br from-brand-500 to-purple-600 flex items-center justify-center flex-shrink-0 text-xs text-white font-semibold ring-2 ring-white/10 group-hover:scale-105 transition-transform">
             {(user?.name || user?.email || 'D')[0].toUpperCase()}
           </div>
           <AnimatePresence>
@@ -158,7 +187,7 @@ export default function Sidebar() {
       {/* Collapse toggle */}
       <button
         onClick={toggleSidebar}
-        className="absolute -right-3 top-1/2 -translate-y-1/2 w-6 h-6 rounded-full bg-surface-600 border border-surface-500 flex items-center justify-center text-[var(--text-muted)] hover:text-[var(--text-primary)] hover:bg-surface-500 transition-all z-10 shadow-lg"
+        className="absolute -right-3 top-1/2 -translate-y-1/2 w-6 h-6 rounded-full bg-surface-800 border-2 border-surface-600 flex items-center justify-center text-[var(--text-muted)] hover:text-white hover:border-brand-500 hover:shadow-lg hover:shadow-brand-500/20 transition-all z-30 shadow-md"
       >
         {sidebarCollapsed ? <ChevronRight size={12} /> : <ChevronLeft size={12} />}
       </button>

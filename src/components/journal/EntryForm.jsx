@@ -9,12 +9,6 @@ import { SegmentedControl } from '../ui/Toggle'
 import { useEntries } from '../../hooks/useEntries'
 import { useNavigate } from 'react-router-dom'
 
-const TYPE_OPTIONS = [
-  { value: 'gi', label: 'Gi' },
-  { value: 'nogi', label: 'No-Gi' },
-  { value: 'both', label: 'Both' },
-]
-
 const DURATION_OPTIONS = [
   { value: '45', label: '45 min' },
   { value: '60', label: '1 hour' },
@@ -24,9 +18,8 @@ const DURATION_OPTIONS = [
   { value: '120', label: '2 hours' },
 ]
 
-const defaultForm = {
+const makeDefault = () => ({
   date: format(new Date(), 'yyyy-MM-dd'),
-  type: 'gi',
   duration: '90',
   mood: 4,
   energy: 3,
@@ -39,11 +32,11 @@ const defaultForm = {
   highlights: '',
   improvements: '',
   instructorFeedback: '',
-}
+})
 
 export default function EntryForm({ onSaved }) {
   const [mode, setMode] = useState('quick') // 'quick' | 'detailed'
-  const [form, setForm] = useState(defaultForm)
+  const [form, setForm] = useState(makeDefault)
   const [saving, setSaving] = useState(false)
   const { saveEntry } = useEntries()
   const navigate = useNavigate()
@@ -61,6 +54,7 @@ export default function EntryForm({ onSaved }) {
         losses: parseInt(form.losses) || 0,
       }
       const saved = await saveEntry(payload)
+      setForm(makeDefault())
       if (onSaved) onSaved(saved)
       else navigate('/journal')
     } catch {
@@ -101,26 +95,6 @@ export default function EntryForm({ onSaved }) {
         />
       </div>
 
-      <div className="space-y-1.5">
-        <label className="block text-xs font-medium text-[var(--text-secondary)]">Type</label>
-        <div className="flex gap-2">
-          {TYPE_OPTIONS.map(opt => (
-            <button
-              key={opt.value}
-              type="button"
-              onClick={() => update('type', opt.value)}
-              className={`px-4 py-2 rounded-lg border text-sm font-medium transition-all ${
-                form.type === opt.value
-                  ? 'bg-blue-600/20 border-blue-500/60 text-blue-300'
-                  : 'bg-surface-800 border-surface-600 text-[var(--text-muted)] hover:border-surface-400'
-              }`}
-            >
-              {opt.label}
-            </button>
-          ))}
-        </div>
-      </div>
-
       <MoodPicker value={form.mood} onChange={v => update('mood', v)} />
       <EnergyPicker value={form.energy} onChange={v => update('energy', v)} />
 
@@ -148,20 +122,20 @@ export default function EntryForm({ onSaved }) {
               <label className="block text-xs font-medium text-[var(--text-secondary)]">Submissions won</label>
               <div className="flex items-center gap-2">
                 <button type="button" onClick={() => update('wins', Math.max(0, form.wins - 1))}
-                  className="w-8 h-8 rounded-lg bg-surface-600 text-[var(--text-primary)] hover:bg-surface-500 transition-colors font-medium">−</button>
+                  className="w-8 h-8 rounded-lg bg-surface-900/50 border border-white/5 text-[var(--text-primary)] hover:bg-surface-800 transition-colors font-medium">−</button>
                 <span className="w-8 text-center font-semibold text-green-400">{form.wins}</span>
                 <button type="button" onClick={() => update('wins', form.wins + 1)}
-                  className="w-8 h-8 rounded-lg bg-surface-600 text-[var(--text-primary)] hover:bg-surface-500 transition-colors font-medium">+</button>
+                  className="w-8 h-8 rounded-lg bg-surface-900/50 border border-white/5 text-[var(--text-primary)] hover:bg-surface-800 transition-colors font-medium">+</button>
               </div>
             </div>
             <div className="space-y-1.5">
               <label className="block text-xs font-medium text-[var(--text-secondary)]">Times submitted</label>
               <div className="flex items-center gap-2">
                 <button type="button" onClick={() => update('losses', Math.max(0, form.losses - 1))}
-                  className="w-8 h-8 rounded-lg bg-surface-600 text-[var(--text-primary)] hover:bg-surface-500 transition-colors font-medium">−</button>
+                  className="w-8 h-8 rounded-lg bg-surface-900/50 border border-white/5 text-[var(--text-primary)] hover:bg-surface-800 transition-colors font-medium">−</button>
                 <span className="w-8 text-center font-semibold text-red-400">{form.losses}</span>
                 <button type="button" onClick={() => update('losses', form.losses + 1)}
-                  className="w-8 h-8 rounded-lg bg-surface-600 text-[var(--text-primary)] hover:bg-surface-500 transition-colors font-medium">+</button>
+                  className="w-8 h-8 rounded-lg bg-surface-900/50 border border-white/5 text-[var(--text-primary)] hover:bg-surface-800 transition-colors font-medium">+</button>
               </div>
             </div>
           </div>

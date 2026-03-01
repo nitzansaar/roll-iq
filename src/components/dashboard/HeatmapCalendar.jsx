@@ -1,3 +1,4 @@
+import { useMemo } from 'react'
 import { buildHeatmapData } from '../../utils/dateHelpers'
 import Card, { CardHeader, CardTitle } from '../ui/Card'
 
@@ -5,38 +6,41 @@ const DAYS = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']
 const MONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
 
 function getIntensityClass(count) {
-  if (count < 0) return 'bg-transparent'
-  if (count === 0) return 'bg-surface-600/60'
-  if (count === 1) return 'bg-blue-800/70'
-  if (count === 2) return 'bg-blue-600/80'
-  return 'bg-blue-500'
+  if (count < 0) return 'bg-transparent border-transparent'
+  if (count === 0) return 'bg-white/5 border-white/5'
+  if (count === 1) return 'bg-brand-900/60 border-brand-500/30'
+  if (count === 2) return 'bg-brand-600/80 border-brand-400/50'
+  return 'bg-brand-500 border-brand-400 shadow-[0_0_12px_rgba(99,102,241,0.6)]'
 }
 
 export default function HeatmapCalendar({ entries }) {
-  const cells = buildHeatmapData(entries)
+  const cells = useMemo(() => buildHeatmapData(entries), [entries])
 
   // Build 12 columns (weeks)
-  const weeks = []
-  for (let i = 0; i < cells.length; i += 7) {
-    weeks.push(cells.slice(i, i + 7))
-  }
+  const weeks = useMemo(() => {
+    const w = []
+    for (let i = 0; i < cells.length; i += 7) w.push(cells.slice(i, i + 7))
+    return w
+  }, [cells])
 
   // Get month labels for columns
-  const monthLabels = []
-  let lastMonth = -1
-  weeks.forEach((week, wi) => {
-    const firstValidDay = week.find(d => d.date)
-    if (firstValidDay) {
-      const month = new Date(firstValidDay.date).getMonth()
-      if (month !== lastMonth) {
-        monthLabels.push({ week: wi, label: MONTHS[month] })
-        lastMonth = month
+  const monthLabels = useMemo(() => {
+    const labels = []
+    let lastMonth = -1
+    weeks.forEach((week, wi) => {
+      const firstValidDay = week.find(d => d.date)
+      if (firstValidDay) {
+        const month = new Date(firstValidDay.date).getMonth()
+        if (month !== lastMonth) {
+          labels.push({ week: wi, label: MONTHS[month] })
+          lastMonth = month
+        }
       }
-    }
-  })
+    })
+    return labels
+  }, [weeks])
 
-  const totalSessions = cells.filter(c => c.count > 0).length
-  const activeDays = cells.filter(c => c.count > 0 && c.date)
+  const totalSessions = useMemo(() => cells.filter(c => c.count > 0).length, [cells])
 
   return (
     <Card>
@@ -83,9 +87,9 @@ export default function HeatmapCalendar({ entries }) {
                       key={di}
                       title={cell.date ? `${cell.label}: ${cell.count} session${cell.count !== 1 ? 's' : ''}` : ''}
                       className={`
-                        heatmap-cell w-3 h-3 rounded-sm
+                        heatmap-cell w-3 h-3 rounded-sm border
                         ${getIntensityClass(cell.count)}
-                        ${cell.isToday ? 'ring-1 ring-blue-400 ring-offset-1 ring-offset-[#1a1a24]' : ''}
+                        ${cell.isToday ? 'ring-2 ring-brand-400 ring-offset-2 ring-offset-black' : ''}
                       `}
                     />
                   ))}

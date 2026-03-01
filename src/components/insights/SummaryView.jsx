@@ -11,12 +11,12 @@ function StatBox({ label, value, icon: Icon, color = 'blue' }) {
   }
 
   return (
-    <div className="bg-surface-600/40 rounded-xl p-4">
+    <div className="glass-panel rounded-2xl p-4 transition-all hover:-translate-y-0.5 hover:shadow-lg hover:shadow-black/20 group">
       <div className={`w-8 h-8 rounded-lg ${colors[color]} flex items-center justify-center mb-2`}>
         <Icon size={15} />
       </div>
-      <p className="text-xl font-bold text-[var(--text-primary)]">{value}</p>
-      <p className="text-xs text-[var(--text-muted)]">{label}</p>
+      <p className="text-xl font-bold text-white tracking-tight">{value}</p>
+      <p className="text-[10px] uppercase font-medium tracking-wider text-[var(--text-muted)] mt-0.5">{label}</p>
     </div>
   )
 }
@@ -49,18 +49,13 @@ export default function SummaryView({ summary }) {
             icon={Smile}
             color="green"
           />
-          <StatBox
-            label="Gi / No-Gi"
-            value={`${stats.giSessions}/${stats.nogiSessions}`}
-            icon={Zap}
-            color="orange"
-          />
         </div>
       )}
 
       {/* AI content */}
       {content && (
-        <Card className="prose-custom">
+        <Card className="prose-custom shadow-xl border-white/5 relative overflow-hidden">
+          <div className="absolute top-0 right-0 w-64 h-64 bg-brand-500/5 blur-[80px] rounded-full pointer-events-none" />
           <MarkdownContent content={content} />
         </Card>
       )}
@@ -70,40 +65,52 @@ export default function SummaryView({ summary }) {
 
 function MarkdownContent({ content }) {
   // Simple markdown renderer for headers and lists
+  // Clean up any stray markdown characters
+  const cleanLine = (line) => line.replace(/^#+\s*/, '')
+
   const lines = content.split('\n')
 
   return (
-    <div className="space-y-2 text-sm text-[var(--text-secondary)] leading-relaxed">
+    <div className="space-y-4 text-sm text-[var(--text-secondary)] leading-relaxed">
       {lines.map((line, i) => {
-        if (line.startsWith('## ')) {
-          return <h2 key={i} className="text-base font-semibold text-[var(--text-primary)] mt-4 first:mt-0">{line.slice(3)}</h2>
+        const trimmed = line.trim()
+        if (!trimmed) return null
+
+        // Header detection (either literal markdown ## or just bold text that acts as a header)
+        if (trimmed.startsWith('#') || (trimmed.startsWith('**') && trimmed.endsWith('**') && !trimmed.includes('-'))) {
+          const text = trimmed.replace(/^#+\s*/, '').replace(/\*\*/g, '')
+          return (
+            <h3 key={i} className="text-base font-bold text-white tracking-tight mt-6 first:mt-0 flex items-center gap-2">
+              <div className="w-1.5 h-4 bg-brand-500 rounded-full" />
+              {text}
+            </h3>
+          )
         }
-        if (line.startsWith('**') && line.endsWith('**')) {
-          return <p key={i} className="font-semibold text-[var(--text-primary)]">{line.slice(2, -2)}</p>
-        }
-        if (line.startsWith('- ')) {
-          const text = line.slice(2)
+
+        // List item detection
+        if (trimmed.startsWith('-') || trimmed.startsWith('* ')) {
+          const text = trimmed.replace(/^[-*]\s*/, '')
           // Bold text within list item
           const parts = text.split(/\*\*(.*?)\*\*/)
           return (
-            <div key={i} className="flex gap-2">
-              <span className="text-blue-400 flex-shrink-0 mt-0.5">•</span>
-              <p>
+            <div key={i} className="flex gap-3 items-start glass-panel bg-white/5 border border-white/5 p-3 rounded-xl hover:bg-white/10 transition-colors">
+              <div className="w-1.5 h-1.5 rounded-full bg-brand-400 flex-shrink-0 mt-2 shadow-[0_0_8px_rgba(99,102,241,0.8)]" />
+              <p className="flex-1 text-white/80">
                 {parts.map((part, j) =>
-                  j % 2 === 1 ? <strong key={j} className="text-[var(--text-primary)] font-medium">{part}</strong> : part
+                  j % 2 === 1 ? <strong key={j} className="text-white font-semibold">{part}</strong> : part
                 )}
               </p>
             </div>
           )
         }
-        if (line.trim() === '') return null
-        // Inline bold
-        const parts = line.split(/\*\*(.*?)\*\*/)
-        if (parts.length === 1) return <p key={i}>{line}</p>
+
+        // Inline bold paragraph
+        const parts = trimmed.split(/\*\*(.*?)\*\*/)
+        if (parts.length === 1) return <p key={i} className="text-white/70">{trimmed}</p>
         return (
-          <p key={i}>
+          <p key={i} className="text-white/70">
             {parts.map((part, j) =>
-              j % 2 === 1 ? <strong key={j} className="text-[var(--text-primary)] font-medium">{part}</strong> : part
+              j % 2 === 1 ? <strong key={j} className="text-white font-semibold">{part}</strong> : part
             )}
           </p>
         )

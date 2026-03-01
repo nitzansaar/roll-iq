@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { Link } from 'react-router-dom'
-import { Search, Plus, Filter, SlidersHorizontal } from 'lucide-react'
+import { Search, Plus, SlidersHorizontal } from 'lucide-react'
 import { AnimatePresence, motion } from 'framer-motion'
 import { useEntries } from '../hooks/useEntries'
 import EntryCard from '../components/journal/EntryCard'
@@ -9,12 +9,6 @@ import Button from '../components/ui/Button'
 import { SegmentedControl } from '../components/ui/Toggle'
 import { PageSpinner } from '../components/ui/Spinner'
 import { groupByWeek } from '../utils/dateHelpers'
-
-const TYPE_OPTIONS = [
-  { value: 'all', label: 'All' },
-  { value: 'gi', label: 'Gi' },
-  { value: 'nogi', label: 'No-Gi' },
-]
 
 const SORT_OPTIONS = [
   { value: 'date', label: 'Recent' },
@@ -26,13 +20,21 @@ export default function JournalPage() {
   const {
     filteredEntries, loading,
     searchQuery, setSearchQuery,
-    filterType, setFilterType,
     sortBy, setSortBy,
     removeEntry,
   } = useEntries()
 
   const [showFilters, setShowFilters] = useState(false)
+  const [pendingDelete, setPendingDelete] = useState(null)
   const grouped = groupByWeek(filteredEntries)
+
+  const handleDeleteRequest = (id) => setPendingDelete(id)
+  const handleDeleteConfirm = async () => {
+    if (pendingDelete) {
+      await removeEntry(pendingDelete)
+      setPendingDelete(null)
+    }
+  }
 
   if (loading) return <PageSpinner />
 
@@ -81,15 +83,7 @@ export default function JournalPage() {
             exit={{ opacity: 0, height: 0 }}
             className="overflow-hidden"
           >
-            <div className="bg-surface-700 border border-surface-500/40 rounded-xl p-4 mb-4 flex flex-wrap items-center gap-4">
-              <div>
-                <p className="text-xs text-[var(--text-muted)] mb-2">Type</p>
-                <SegmentedControl
-                  options={TYPE_OPTIONS}
-                  value={filterType}
-                  onChange={setFilterType}
-                />
-              </div>
+            <div className="glass-panel p-4 mb-5 flex flex-wrap items-center gap-5">
               <div>
                 <p className="text-xs text-[var(--text-muted)] mb-2">Sort by</p>
                 <SegmentedControl
@@ -129,7 +123,7 @@ export default function JournalPage() {
                     <EntryCard
                       key={entry.id}
                       entry={entry}
-                      onDelete={removeEntry}
+                      onDelete={handleDeleteRequest}
                     />
                   ))}
                 </AnimatePresence>
@@ -138,6 +132,29 @@ export default function JournalPage() {
           ))}
         </div>
       )}
+      {/* Delete confirmation */}
+      <AnimatePresence>
+        {pendingDelete && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+            <motion.div
+              className="absolute inset-0 bg-black/60 backdrop-blur-sm"
+              initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+              onClick={() => setPendingDelete(null)}
+            />
+            <motion.div
+              initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 0.95 }}
+              className="relative glass border-white/10 p-6 w-full max-w-sm shadow-[0_0_40px_rgba(0,0,0,0.5)]"
+            >
+              <h3 className="text-lg font-bold text-white mb-2">Delete entry?</h3>
+              <p className="text-sm text-[var(--text-secondary)] mb-5">This can't be undone.</p>
+              <div className="flex gap-3 justify-end">
+                <Button variant="secondary" size="sm" onClick={() => setPendingDelete(null)}>Cancel</Button>
+                <Button variant="danger" size="sm" onClick={handleDeleteConfirm}>Delete</Button>
+              </div>
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
     </div>
   )
 }

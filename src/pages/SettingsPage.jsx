@@ -1,9 +1,7 @@
-import { useState } from 'react'
-import { User, Download, Key, Trash2, ChevronRight } from 'lucide-react'
+import { User, Download, Key } from 'lucide-react'
 import Card, { CardHeader, CardTitle } from '../components/ui/Card'
 import Button from '../components/ui/Button'
 import Input from '../components/ui/Input'
-import Toggle from '../components/ui/Toggle'
 import useAuthStore from '../store/authStore'
 import useEntriesStore from '../store/entriesStore'
 import useUIStore from '../store/uiStore'
@@ -12,9 +10,7 @@ import { IS_MOCK } from '../lib/supabase'
 export default function SettingsPage() {
   const { user } = useAuthStore()
   const { entries } = useEntriesStore()
-  const { toast } = useUIStore()
-  const [giDefault, setGiDefault] = useState(true)
-  const [instructor, setInstructor] = useState(user?.instructor || '')
+  const { toast, instructor, setInstructor } = useUIStore()
 
   const exportJSON = () => {
     const blob = new Blob([JSON.stringify(entries, null, 2)], { type: 'application/json' })
@@ -80,22 +76,6 @@ export default function SettingsPage() {
           value={instructor}
           onChange={e => setInstructor(e.target.value)}
         />
-      </Card>
-
-      {/* Training preferences */}
-      <Card>
-        <CardHeader>
-          <CardTitle>Training Preferences</CardTitle>
-        </CardHeader>
-        <div className="space-y-4">
-          <div className="flex items-center justify-between py-1">
-            <div>
-              <p className="text-sm text-[var(--text-primary)]">Default to Gi</p>
-              <p className="text-xs text-[var(--text-muted)]">When logging new entries</p>
-            </div>
-            <Toggle checked={giDefault} onChange={setGiDefault} />
-          </div>
-        </div>
       </Card>
 
       {/* API Keys */}

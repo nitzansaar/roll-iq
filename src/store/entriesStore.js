@@ -1,13 +1,15 @@
 import { create } from 'zustand'
+import { persist } from 'zustand/middleware'
 
-const useEntriesStore = create((set, get) => ({
+const useEntriesStore = create(
+  persist(
+    (set, get) => ({
   entries: [],
   loading: false,
   error: null,
 
   // Filters
   searchQuery: '',
-  filterType: 'all', // 'all' | 'gi' | 'nogi'
   filterTag: null,
   sortBy: 'date', // 'date' | 'mood' | 'duration'
 
@@ -29,23 +31,15 @@ const useEntriesStore = create((set, get) => ({
   setError: (error) => set({ error }),
 
   setSearchQuery: (q) => set({ searchQuery: q }),
-  setFilterType: (t) => set({ filterType: t }),
   setFilterTag: (tag) => set({ filterTag: tag }),
   setSortBy: (s) => set({ sortBy: s }),
 
   setSummary: (summary) => set({ summary }),
   setSummaryLoading: (loading) => set({ summaryLoading: loading }),
 
-  /**
-   * Computed: filtered + sorted entries
-   */
   getFilteredEntries: () => {
-    const { entries, searchQuery, filterType, filterTag, sortBy } = get()
+    const { entries, searchQuery, filterTag, sortBy } = get()
     let result = [...entries]
-
-    if (filterType !== 'all') {
-      result = result.filter((e) => e.type === filterType)
-    }
 
     if (filterTag) {
       result = result.filter(
@@ -55,7 +49,6 @@ const useEntriesStore = create((set, get) => ({
           e.techniques?.includes(filterTag)
       )
     }
-
     if (searchQuery) {
       const q = searchQuery.toLowerCase()
       result = result.filter(
@@ -66,21 +59,16 @@ const useEntriesStore = create((set, get) => ({
           e.positions?.some((p) => p.includes(q))
       )
     }
-
     if (sortBy === 'mood') {
       result.sort((a, b) => (b.mood || 0) - (a.mood || 0))
     } else if (sortBy === 'duration') {
       result.sort((a, b) => (b.duration || 0) - (a.duration || 0))
     } else {
-      result.sort((a, b) => b.date?.localeCompare(a.date))
+      result.sort((a, b) => (b.date || '').localeCompare(a.date || ''))
     }
-
     return result
   },
 
-  /**
-   * Get all unique tags from entries
-   */
   getAllTags: () => {
     const { entries } = get()
     const tags = new Set()
@@ -90,6 +78,12 @@ const useEntriesStore = create((set, get) => ({
     }
     return Array.from(tags).sort()
   },
-}))
+}),
+{
+  name: 'rolliq-entries',
+  partialize: (state) => ({ summary: state.summary }),
+}
+)
+)
 
 export default useEntriesStore

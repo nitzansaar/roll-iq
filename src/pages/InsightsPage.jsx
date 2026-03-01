@@ -56,13 +56,16 @@ export default function InsightsPage() {
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
-          className="bg-surface-700 border border-surface-500/40 rounded-xl p-8 text-center"
+          className="glass-panel rounded-2xl p-10 text-center relative overflow-hidden shadow-2xl"
         >
-          <div className="w-12 h-12 rounded-full border-2 border-surface-500 border-t-purple-500 animate-spin mx-auto mb-4" />
-          <p className="text-sm font-medium text-[var(--text-primary)]">Analyzing your training...</p>
-          <p className="text-xs text-[var(--text-muted)] mt-1">
-            {GROQ_MOCK ? 'Loading mock insights' : 'AI processing your sessions'}
-          </p>
+          <div className="absolute inset-0 bg-gradient-to-br from-brand-600/5 to-transparent pointer-events-none" />
+          <div className="relative z-10">
+            <div className="w-12 h-12 rounded-full border-2 border-surface-500/30 border-t-brand-500 animate-[spin_1s_ease-in-out_infinite] mx-auto mb-5 shadow-[0_0_15px_rgba(99,102,241,0.3)]" />
+            <p className="text-sm font-semibold text-white tracking-wide">Analyzing your training...</p>
+            <p className="text-xs text-[var(--text-muted)] mt-1.5">
+              {GROQ_MOCK ? 'Loading mock insights' : 'AI processing your sessions'}
+            </p>
+          </div>
         </motion.div>
       )}
 
@@ -71,28 +74,31 @@ export default function InsightsPage() {
         <motion.div
           initial={{ opacity: 0, y: 12 }}
           animate={{ opacity: 1, y: 0 }}
-          className="bg-surface-700 border border-surface-500/40 rounded-xl p-10 text-center"
+          className="glass-panel p-10 rounded-2xl text-center relative overflow-hidden shadow-2xl"
         >
-          <div className="w-16 h-16 rounded-2xl bg-purple-900/30 flex items-center justify-center mx-auto mb-4">
-            <Sparkles size={28} className="text-purple-400" />
-          </div>
-          <h2 className="text-base font-semibold text-[var(--text-primary)] mb-2">
-            Ready to analyze your training
-          </h2>
-          <p className="text-sm text-[var(--text-secondary)] max-w-sm mx-auto mb-6 leading-relaxed">
-            Generate an AI-powered breakdown of your patterns, weaknesses, and strengths based on your logged sessions.
-          </p>
-          <Button
-            onClick={() => generateSummary(period)}
-            icon={Sparkles}
-          >
-            Generate {period === 'last-7-days' ? '7-Day' : '30-Day'} Summary
-          </Button>
-          {entries.length === 0 && (
-            <p className="text-xs text-[var(--text-muted)] mt-3">
-              Tip: Log some sessions first for better insights
+          <div className="absolute inset-0 bg-gradient-to-br from-brand-500/5 to-purple-500/5 pointer-events-none" />
+          <div className="relative z-10">
+            <div className="w-16 h-16 rounded-2xl bg-brand-500/10 flex items-center justify-center mx-auto mb-5 ring-1 ring-brand-500/20 shadow-inner">
+              <Sparkles size={28} className="text-brand-400" />
+            </div>
+            <h2 className="text-lg font-bold text-white tracking-tight mb-2">
+              Ready to analyze your training
+            </h2>
+            <p className="text-sm text-[var(--text-secondary)] max-w-sm mx-auto mb-6 leading-relaxed">
+              Generate an AI-powered breakdown of your patterns, weaknesses, and strengths based on your logged sessions.
             </p>
-          )}
+            <Button
+              onClick={() => generateSummary(period)}
+              icon={Sparkles}
+            >
+              Generate {period === 'last-7-days' ? '7-Day' : '30-Day'} Summary
+            </Button>
+            {entries.length === 0 && (
+              <p className="text-xs text-[var(--text-muted)] mt-4">
+                Tip: Log some sessions first for better insights
+              </p>
+            )}
+          </div>
         </motion.div>
       )}
 
